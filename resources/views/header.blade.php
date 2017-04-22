@@ -467,7 +467,7 @@
                       ]) !!}
                 @endif
               @else
-                @include('partials.white_label', ['company' => Auth::user()->account->company])
+{{--                @include('partials.white_label', ['company' => Auth::user()->account->company])--}}
               @endif
             </div>
         </div>
