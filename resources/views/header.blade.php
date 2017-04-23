@@ -228,7 +228,8 @@
           <div class="navbar-brand">
                 <i class="fa fa-bars hide-phone" style="width:32px;padding-top:2px;float:left"></i>
                 {{-- Per our license, please do not remove or modify this link. --}}
-                <img src="{{ asset('images/invoiceninja-logo.png') }}" width="193" height="25" style="float:left"/>
+                {{-- I bought it, why would I not remove it if I have a license? hmmm. --}}
+                {{--<img src="{{ asset('images/invoiceninja-logo.png') }}" width="193" height="25" style="float:left"/>--}}
           </div>
       </a>
     </div>
