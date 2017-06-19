@@ -38,6 +38,8 @@ class BasePaymentDriver
     protected $customerReferenceParam;
     protected $transactionReferenceParam;
 
+    public $canRefundPayments = false;
+
     public function __construct($accountGateway = false, $invitation = false, $gatewayType = false)
     {
         $this->accountGateway = $accountGateway;
@@ -312,7 +314,7 @@ class BasePaymentDriver
             $payment = $this->createPayment($ref, $paymentMethod);
 
             // TODO move this to stripe driver
-            if ($this->invitation->invoice->account->account_key == NINJA_ACCOUNT_KEY) {
+            if ($this->invitation->invoice->account->isNinjaAccount()) {
                 Session::flash('trackEventCategory', '/account');
                 Session::flash('trackEventAction', '/buy_pro_plan');
                 Session::flash('trackEventAmount', $payment->amount);
@@ -379,7 +381,7 @@ class BasePaymentDriver
             'description' => trans('texts.' . $invoice->getEntityType()) . " {$invoice->invoice_number}",
             'transactionId' => $invoice->invoice_number,
             'transactionType' => 'Purchase',
-            'ip' => Request::ip(),
+            'ip' => Request::getClientIp(),
         ];
 
         if ($paymentMethod) {
@@ -613,6 +615,7 @@ class BasePaymentDriver
 
     public function createPayment($ref = false, $paymentMethod = null)
     {
+        $account = $this->account();
         $invitation = $this->invitation;
         $invoice = $this->invoice();
         $invoice->markSentIfUnsent();
@@ -625,7 +628,7 @@ class BasePaymentDriver
         $payment->client_id = $invoice->client_id;
         $payment->contact_id = $invitation->contact_id;
         $payment->transaction_reference = $ref;
-        $payment->payment_date = date_create()->format('Y-m-d');
+        $payment->payment_date = $account->getDateTime()->format('Y-m-d');
         $payment->ip = Request::ip();
 
         $payment = $this->creatingPayment($payment, $paymentMethod);
@@ -648,7 +651,7 @@ class BasePaymentDriver
             $this->createLicense($payment);
         // TODO move this code
         // enable pro plan for hosted users
-        } elseif ($accountKey == NINJA_ACCOUNT_KEY) {
+        } elseif ($invoice->account->isNinjaAccount()) {
             foreach ($invoice->invoice_items as $invoice_item) {
                 // Hacky, but invoices don't have meta fields to allow us to store this easily
                 if (1 == preg_match('/^Plan - (.+) \((.+)\)$/', $invoice_item->product_key, $matches)) {

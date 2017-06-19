@@ -10,6 +10,7 @@ use Exception;
 class StripePaymentDriver extends BasePaymentDriver
 {
     protected $customerReferenceParam = 'customerReference';
+    public $canRefundPayments = true;
 
     public function gatewayTypes()
     {
@@ -280,7 +281,7 @@ class StripePaymentDriver extends BasePaymentDriver
             'amounts[]=' . intval($amount1) . '&amounts[]=' . intval($amount2)
         );
 
-        if (is_string($result)) {
+        if (is_string($result) && $result != 'This bank account has already been verified.') {
             return $result;
         }
 
