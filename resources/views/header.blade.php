@@ -362,7 +362,7 @@
 
     <!-- Sidebar -->
     <div id="left-sidebar-wrapper" class="hide-phone">
-        <ul class="sidebar-nav">
+        <ul class="sidebar-nav {{ Auth::user()->dark_mode ? 'sidebar-nav-dark' : 'sidebar-nav-light' }}">
             @foreach([
                 'dashboard',
                 'clients',
@@ -423,7 +423,7 @@
     <!-- /#left-sidebar-wrapper -->
 
     <div id="right-sidebar-wrapper" class="hide-phone" style="overflow-y:hidden">
-        <ul class="sidebar-nav">
+        <ul class="sidebar-nav {{ Auth::user()->dark_mode ? 'sidebar-nav-dark' : 'sidebar-nav-light' }}">
             {!! \App\Libraries\HistoryUtils::renderHtml(Auth::user()->account_id) !!}
         </ul>
     </div>
