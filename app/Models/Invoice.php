@@ -115,6 +115,8 @@ class Invoice extends EntityModel implements BalanceAffecting
             'terms',
             'product',
             'quantity',
+            'tax1',
+            'tax2',
         ];
     }
 
@@ -135,6 +137,7 @@ class Invoice extends EntityModel implements BalanceAffecting
             'notes' => 'notes',
             'product|item' => 'product',
             'quantity|qty' => 'quantity',
+            'tax' => 'tax1',
         ];
     }
 
@@ -303,6 +306,23 @@ class Invoice extends EntityModel implements BalanceAffecting
     public function documents()
     {
         return $this->hasMany('App\Models\Document')->orderBy('id');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function allDocuments()
+    {
+        $documents = $this->documents;
+        $documents = $documents->merge($this->account->defaultDocuments);
+
+        foreach ($this->expenses as $expense) {
+            if ($expense->invoice_documents) {
+                $documents = $documents->merge($expense->documents);
+            }
+        }
+
+        return $documents;
     }
 
     /**
@@ -1162,10 +1182,7 @@ class Invoice extends EntityModel implements BalanceAffecting
             }
 
             if (! $pdfString && ($key = env('PHANTOMJS_CLOUD_KEY'))) {
-                if (Utils::isNinjaDev()) {
-                    $link = env('TEST_LINK');
-                }
-                $url = "http://api.phantomjscloud.com/api/browser/v2/{$key}/?request=%7Burl:%22{$link}?phantomjs=true&phantomjs_secret={$phantomjsSecret}%22,renderType:%22html%22%7D";
+                $url = "http://api.phantomjscloud.com/api/browser/v2/{$key}/?request=%7Burl:%22{$link}?phantomjs=true%26phantomjs_secret={$phantomjsSecret}%22,renderType:%22html%22%7D";
                 $pdfString = CurlUtils::get($url);
             }
 
@@ -1322,13 +1339,21 @@ class Invoice extends EntityModel implements BalanceAffecting
     /**
      * @return int
      */
-    public function countDocuments()
+    public function countDocuments($expenses = false)
     {
         $count = count($this->documents);
 
         foreach ($this->expenses as $expense) {
             if ($expense->invoice_documents) {
                 $count += count($expense->documents);
+            }
+        }
+
+        if ($expenses) {
+            foreach ($expenses as $expense) {
+                if ($expense->invoice_documents) {
+                    $count += count($expense->documents);
+                }
             }
         }
 
@@ -1340,7 +1365,11 @@ class Invoice extends EntityModel implements BalanceAffecting
      */
     public function hasDocuments()
     {
-        if (count($this->documents)) {
+        if ($this->documents->count()) {
+            return true;
+        }
+
+        if ($this->account->defaultDocuments->count()) {
             return true;
         }
 
