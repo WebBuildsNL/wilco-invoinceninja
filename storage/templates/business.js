@@ -168,7 +168,8 @@
             "fontSize": "$fontSizeLargest",
             "bold": true,
             "color":"#ffffff",
-            "alignment":"right"
+            "alignment":"right",
+            "noWrap":true
         },
         "invoiceDetails": {
             "color": "#ffffff"
