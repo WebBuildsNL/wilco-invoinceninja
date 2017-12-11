@@ -48,6 +48,9 @@ class AccountRepository
                 if (env('PARTNER_CAMPAIGN') && hash_equals(Input::get('utm_campaign'), env('PARTNER_CAMPAIGN'))) {
                     $company->applyFreeYear();
                 }
+            } else {
+                //$company->applyDiscount(.5);
+                //session()->flash('warning', $company->present()->promoMessage());
             }
 
             $company->save();
@@ -58,8 +61,30 @@ class AccountRepository
         $account->account_key = strtolower(str_random(RANDOM_KEY_LENGTH));
         $account->company_id = $company->id;
 
-        if ($locale = Session::get(SESSION_LOCALE)) {
-            if ($language = Language::whereLocale($locale)->first()) {
+        // Set default language/currency based on IP
+        if (\Cache::get('currencies')) {
+            $data = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip=' . $account->ip));
+            $currencyCode = strtolower($data['geoplugin_currencyCode']);
+            $countryCode = strtolower($data['geoplugin_countryCode']);
+
+            $currency = \Cache::get('currencies')->filter(function ($item) use ($currencyCode) {
+                return strtolower($item->code) == $currencyCode;
+            })->first();
+            if ($currency) {
+                $account->currency_id = $currency->id;
+            }
+
+            $country = \Cache::get('countries')->filter(function ($item) use ($countryCode) {
+                return strtolower($item->iso_3166_2) == $countryCode || strtolower($item->iso_3166_3) == $countryCode;
+            })->first();
+            if ($country) {
+                $account->country_id = $country->id;
+            }
+
+            $language = \Cache::get('languages')->filter(function ($item) use ($countryCode) {
+                return strtolower($item->locale) == $countryCode;
+            })->first();
+            if ($language) {
                 $account->language_id = $language->id;
             }
         }

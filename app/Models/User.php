@@ -59,7 +59,15 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = ['password', 'remember_token', 'confirmation_code'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+        'confirmation_code',
+        'oauth_user_id',
+        'oauth_provider_id',
+        'google_2fa_secret',
+        'google_2fa_phone',
+    ];
 
     /**
      * @var array
@@ -122,6 +130,14 @@ class User extends Authenticatable
     public function isPro()
     {
         return $this->account->isPro();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function hasActivePromo()
+    {
+        return $this->account->hasActivePromo();
     }
 
     /**

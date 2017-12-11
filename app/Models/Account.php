@@ -176,6 +176,7 @@ class Account extends Eloquent
         'credit_number_counter',
         'credit_number_prefix',
         'credit_number_pattern',
+        'task_rate',
     ];
 
     /**
@@ -809,7 +810,7 @@ class Account extends Eloquent
             $available = true;
 
             foreach ($gatewayTypes as $type) {
-                if ($paymentDriver->handles($type)) {
+                if ($type != GATEWAY_TYPE_TOKEN && $paymentDriver->handles($type)) {
                     $available = false;
                     break;
                 }
@@ -1084,6 +1085,11 @@ class Account extends Eloquent
         }
     }
 
+    public function isPaid()
+    {
+        return Utils::isNinja() ? $this->isPro() : Utils::isWhiteLabel();
+    }
+
     /**
      * @param null $plan_details
      *
@@ -1102,6 +1108,14 @@ class Account extends Eloquent
         $plan_details = $this->getPlanDetails();
 
         return ! empty($plan_details);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function hasActivePromo()
+    {
+        return $this->company->hasActivePromo();
     }
 
     /**

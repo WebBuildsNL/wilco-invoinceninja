@@ -57,7 +57,7 @@ class SendReminders extends Command
 
     public function fire()
     {
-        $this->info(date('Y-m-d') . ' Running SendReminders...');
+        $this->info(date('r') . ' Running SendReminders...');
 
         if ($database = $this->option('database')) {
             config(['database.default' => $database]);
@@ -77,6 +77,7 @@ class SendReminders extends Command
             foreach ($invoices as $invoice) {
                 if ($reminder = $account->getInvoiceReminder($invoice, false)) {
                     $this->info('Charge fee: ' . $invoice->id);
+                    $account->loadLocalizationSettings($invoice->client); // support trans to add fee line item
                     $number = preg_replace('/[^0-9]/', '', $reminder);
                     $amount = $account->account_email_settings->{"late_fee{$number}_amount"};
                     $percent = $account->account_email_settings->{"late_fee{$number}_percent"};
