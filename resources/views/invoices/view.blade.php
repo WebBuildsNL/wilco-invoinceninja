@@ -115,7 +115,41 @@
                 });
             });
         </script>
-    @endif
+	@elseif (! empty($accountGateway) && $accountGateway->getApplePayEnabled())
+		<script type="text/javascript" src="https://js.stripe.com/v3/"></script>
+	    <script type="text/javascript">
+	        // https://stripe.com/docs/stripe-js/elements/payment-request-button
+	        var stripe = Stripe('{{ $accountGateway->getPublishableStripeKey() }}');
+	        var paymentRequest = stripe.paymentRequest({
+	            country: '{{ $invoice->client->getCountryCode() }}',
+	            currency: '{{ strtolower($invoice->client->getCurrencyCode()) }}',
+	            total: {
+	                label: '{{ trans('texts.invoice') . ' ' . $invitation->invoice->invoice_number }}',
+	                amount: {{ $invitation->invoice->getRequestedAmount() * 100 }},
+	            },
+	        });
+
+	        var elements = stripe.elements();
+	        var prButton = elements.create('paymentRequestButton', {
+	            paymentRequest: paymentRequest,
+	        });
+
+	        $(function() {
+	            // Check the availability of the Payment Request API first.
+	            paymentRequest.canMakePayment().then(function(result) {
+	                if (result) {
+	                    // do nothing
+	                } else {
+	                    console.log('not supported');
+						$('#paymentButtons ul.dropdown-menu li').last().remove();
+	                }
+	            });
+
+	        });
+
+	    </script>
+
+	@endif
 @stop
 
 @section('content')
@@ -129,7 +163,7 @@
             @if ($invoice->isQuote())
                 {!! Button::normal(trans('texts.download_pdf'))->withAttributes(['onclick' => 'onDownloadClick()'])->large() !!}&nbsp;&nbsp;
                 @if ($showApprove)
-                    {!! Button::success(trans('texts.approve'))->asLinkTo(URL::to('/approve/' . $invitation->invitation_key))->large() !!}
+                    {!! Button::success(trans('texts.approve'))->withAttributes(['id' => 'approveButton', 'onclick' => 'onApproveClick()'])->large() !!}
                 @endif
 			@elseif ( ! $invoice->canBePaid())
 				{!! Button::normal(trans('texts.download_pdf'))->withAttributes(['onclick' => 'onDownloadClick()'])->large() !!}
@@ -253,6 +287,11 @@
 					$('#termsCheckbox').attr('checked', false);
 				@endif
 				$('#authorizationModal').modal('show');
+			}
+
+			function onApproveClick() {
+				$('#approveButton').prop('disabled', true);
+				location.href = "{{ url('/approve/' . $invitation->invitation_key) }}";
 			}
 
 			function onDownloadClick() {
