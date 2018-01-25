@@ -426,14 +426,14 @@ function InvoiceModel(data) {
 
         var taxRate1 = parseFloat(self.tax_rate1());
         @if ($account->inclusive_taxes)
-            var tax1 = roundToTwo((total * 100) / (100 + (taxRate1 * 100)));
+            var tax1 = roundToTwo(total - (total / (1 + (taxRate1 / 100))));
         @else
             var tax1 = roundToTwo(total * (taxRate1/100));
         @endif
 
         var taxRate2 = parseFloat(self.tax_rate2());
         @if ($account->inclusive_taxes)
-            var tax2 = roundToTwo((total * 100) / (100 + (taxRate2 * 100)));
+            var tax2 = roundToTwo(total - (total / (1 + (taxRate2 / 100))));
         @else
             var tax2 = roundToTwo(total * (taxRate2/100));
         @endif
@@ -456,7 +456,7 @@ function InvoiceModel(data) {
             }
 
             @if ($account->inclusive_taxes)
-                var taxAmount = roundToTwo((lineTotal * 100) / (100 + (item.tax_rate1() * 100)));
+                var taxAmount = roundToTwo(lineTotal - (lineTotal / (1 + (item.tax_rate1() / 100))))
             @else
                 var taxAmount = roundToTwo(lineTotal * item.tax_rate1() / 100);
             @endif
@@ -470,7 +470,7 @@ function InvoiceModel(data) {
             }
 
             @if ($account->inclusive_taxes)
-                var taxAmount = roundToTwo((lineTotal * 100) / (100 + (item.tax_rate2() * 100)));
+                var taxAmount = roundToTwo(lineTotal - (lineTotal / (1 + (item.tax_rate2() / 100))))
             @else
                 var taxAmount = roundToTwo(lineTotal * item.tax_rate2() / 100);
             @endif
@@ -1063,16 +1063,16 @@ ko.bindingHandlers.productTypeahead = {
                                         from: currencyMap[accountCurrencyId].code,
                                         to: currencyMap[clientCurrencyId].code,
                                     });
-                                    if ((account.custom_invoice_text_label1 || '').toLowerCase() == 'exchange rate') {
+                                    if ((account.custom_invoice_text_label1 || '').toLowerCase() == "{{ strtolower(trans('texts.exchange_rate')) }}") {
                                         window.model.invoice().custom_text_value1(roundToFour(rate, true));
-                                    } else if ((account.custom_invoice_text_label2 || '').toLowerCase() == 'exchange rate') {
+                                    } else if ((account.custom_invoice_text_label2 || '').toLowerCase() == "{{ strtolower(trans('texts.exchange_rate')) }}") {
                                         window.model.invoice().custom_text_value2(roundToFour(rate, true));
                                     }
                                 }
                             }
                         @endif
 
-                        model.cost(roundSignificant(cost, true));
+                        model.cost(roundToTwo(cost, true));
                     }
                 }
                 if (!model.qty() && ! model.task_public_id()) {

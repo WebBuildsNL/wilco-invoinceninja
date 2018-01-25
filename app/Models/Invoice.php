@@ -690,6 +690,15 @@ class Invoice extends EntityModel implements BalanceAffecting
         }
     }
 
+    public function activeUser()
+    {
+        if (! $this->user->trashed()) {
+            return $this->user;
+        }
+
+        return $this->account->users->first();
+    }
+
     /**
      * @return mixed
      */
@@ -964,6 +973,7 @@ class Invoice extends EntityModel implements BalanceAffecting
             'work_phone',
             'work_email',
             'country',
+            'country_id',
             'currency_id',
             'custom_label1',
             'custom_value1',
@@ -971,6 +981,8 @@ class Invoice extends EntityModel implements BalanceAffecting
             'custom_value2',
             'custom_client_label1',
             'custom_client_label2',
+            'custom_contact_label1',
+            'custom_contact_label2',
             'primary_color',
             'secondary_color',
             'hide_quantity',
@@ -1392,7 +1404,7 @@ class Invoice extends EntityModel implements BalanceAffecting
 
         if ($this->tax_name1) {
             if ($account->inclusive_taxes) {
-                $invoiceTaxAmount = round(($taxable * 100) / (100 + ($this->tax_rate1 * 100)), 2);
+                $invoiceTaxAmount = round($taxable - ($taxable / (1 + ($this->tax_rate1 / 100))), 2);
             } else {
                 $invoiceTaxAmount = round($taxable * ($this->tax_rate1 / 100), 2);
             }
@@ -1402,7 +1414,7 @@ class Invoice extends EntityModel implements BalanceAffecting
 
         if ($this->tax_name2) {
             if ($account->inclusive_taxes) {
-                $invoiceTaxAmount = round(($taxable * 100) / (100 + ($this->tax_rate2 * 100)), 2);
+                $invoiceTaxAmount = round($taxable - ($taxable / (1 + ($this->tax_rate2 / 100))), 2);
             } else {
                 $invoiceTaxAmount = round($taxable * ($this->tax_rate2 / 100), 2);
             }
@@ -1415,7 +1427,7 @@ class Invoice extends EntityModel implements BalanceAffecting
 
             if ($invoiceItem->tax_name1) {
                 if ($account->inclusive_taxes) {
-                    $itemTaxAmount = round(($itemTaxable * 100) / (100 + ($invoiceItem->tax_rate1 * 100)), 2);
+                    $itemTaxAmount = round($taxable - ($taxable / (1 + ($invoiceItem->tax_rate1 / 100))), 2);
                 } else {
                     $itemTaxAmount = round($itemTaxable * ($invoiceItem->tax_rate1 / 100), 2);
                 }
@@ -1425,7 +1437,7 @@ class Invoice extends EntityModel implements BalanceAffecting
 
             if ($invoiceItem->tax_name2) {
                 if ($account->inclusive_taxes) {
-                    $itemTaxAmount = round(($itemTaxable * 100) / (100 + ($invoiceItem->tax_rate2 * 100)), 2);
+                    $itemTaxAmount = round($taxable - ($taxable / (1 + ($invoiceItem->tax_rate2 / 100))), 2);
                 } else {
                     $itemTaxAmount = round($itemTaxable * ($invoiceItem->tax_rate2 / 100), 2);
                 }

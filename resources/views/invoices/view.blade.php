@@ -137,11 +137,8 @@
 	        $(function() {
 	            // Check the availability of the Payment Request API first.
 	            paymentRequest.canMakePayment().then(function(result) {
-	                if (result) {
-	                    // do nothing
-	                } else {
-	                    console.log('not supported');
-						$('#paymentButtons ul.dropdown-menu li').last().remove();
+	                if (! result) {
+						$('#paymentButtons ul.dropdown-menu li').find('a[href$="apple_pay"]').remove();
 	                }
 	            });
 
@@ -290,6 +287,15 @@
 			}
 
 			function onApproveClick() {
+				@if ($account->requiresAuthorization($invoice))
+					window.pendingPaymentFunction = approveQuote;
+					showAuthorizationModal();
+				@else
+					approveQuote();
+				@endif
+			}
+
+			function approveQuote() {
 				$('#approveButton').prop('disabled', true);
 				location.href = "{{ url('/approve/' . $invitation->invitation_key) }}";
 			}
