@@ -1218,7 +1218,7 @@ class InvoiceRepository extends BaseRepository
         if (! $frequencyId || ! $account->enable_reminder4) {
             return [];
         }
-        
+
         $lastSentDate = date_create();
         $lastSentDate->sub(date_interval_create_from_date_string($frequency->date_interval));
 
