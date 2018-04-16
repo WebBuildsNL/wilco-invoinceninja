@@ -9,7 +9,6 @@
             <table cellpadding="10" cellspacing="0" border="0" bgcolor="#2F2C2B" width="600" align="center" class="header">
                 <tr>
                     <td class="logo" style="border-collapse: collapse; vertical-align: middle; padding-left:34px; padding-top:20px; padding-bottom:12px" valign="middle">
-
                     </td>
                 </tr>
             </table>
@@ -25,11 +24,11 @@
 @stop
 
 @section('footer')
-    <p style="color: #A7A6A6; font-size: 13px; line-height: 18px; margin: 0 0 7px; padding: 0;">
-        <a href="{{ SOCIAL_LINK_FACEBOOK }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;"><img src="{{ $message->embed(public_path('images/emails/icon-facebook.png')) }}" alt="Facebook" /></a>
-        <a href="{{ SOCIAL_LINK_TWITTER }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;"><img src="{{ $message->embed(public_path('images/emails/icon-twitter.png')) }}" alt="Twitter" /></a>
-        <a href="{{ SOCIAL_LINK_GITHUB }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;"><img src="{{ $message->embed(public_path('images/emails/icon-github.png')) }}" alt="GitHub" /></a>
-    </p>
+    {{--<p style="color: #A7A6A6; font-size: 13px; line-height: 18px; margin: 0 0 7px; padding: 0;">--}}
+        {{--<a href="{{ SOCIAL_LINK_FACEBOOK }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;"><img src="{{ isset($message) ? $message->embed(public_path('images/emails/icon-facebook.png')) : 'cid:icon-facebook.png' }}" alt="Facebook" /></a>--}}
+        {{--<a href="{{ SOCIAL_LINK_TWITTER }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;"><img src="{{ isset($message) ? $message->embed(public_path('images/emails/icon-twitter.png')) : 'cid:icon-twitter.png' }}" alt="Twitter" /></a>--}}
+        {{--<a href="{{ SOCIAL_LINK_GITHUB }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;"><img src="{{ isset($message) ? $message->embed(public_path('images/emails/icon-github.png')) : 'cid:icon-github.png' }}" alt="GitHub" /></a>--}}
+    {{--</p>--}}
 
     <p style="color: #A7A6A6; font-size: 13px; line-height: 18px; margin: 0 0 7px; padding: 0;">
         <strong><a href="{{ URL::to('/settings/notifications') }}" style="color: #A7A6A6; text-decoration: none; font-weight: bold; font-size: 10px;">{{ strtoupper(trans('texts.email_preferences')) }}</a></strong>

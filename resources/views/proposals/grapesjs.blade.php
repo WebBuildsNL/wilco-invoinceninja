@@ -4,9 +4,10 @@ $(function() {
 
     window.grapesjsEditor = grapesjs.init({
         container : '#gjs',
-        components: '{!! $entity ? $entity->html : '' !!}',
-        style: '{!! $entity ? $entity->css : '' !!}',
+        components: {!! json_encode($entity ? $entity->html : '') !!},
+        style: {!! json_encode($entity ? $entity->css : '') !!},
         showDevices: false,
+        noticeOnUnload: false,
         plugins: ['gjs-preset-newsletter'],
         pluginsOpts: {
             'gjs-preset-newsletter': {
@@ -14,7 +15,13 @@ $(function() {
             }
         },
         storageManager: {
-            type: 'none'
+            type: 'none',
+            autosave: false,
+            autoload: false,
+            storeComponents: false,
+            storeStyles: false,
+            storeHtml: false,
+            storeCss: false,
         },
         assetManager: {
             assets: {!! json_encode($documents) !!},
@@ -30,11 +37,25 @@ $(function() {
             @endif
             uploadName: 'files',
             params: {
-                '_token': '{{ Session::getToken() }}',
+                '_token': '{{ Session::token() }}',
                 'grapesjs': true,
             }
         }
     });
+
+    var panelManager = grapesjsEditor.Panels;
+    panelManager.addButton('options', [{
+        id: 'undo',
+        className: 'fa fa-undo',
+        command: 'undo',
+        attributes: { title: 'Undo (CTRL/CMD + Z)'}
+    },{
+        id: 'redo',
+        className: 'fa fa-repeat',
+        attributes: {title: 'Redo'},
+        command: 'redo',
+        attributes: { title: 'Redo (CTRL/CMD + SHIFT + Z)' }
+    }]);
 
     var blockManager = grapesjsEditor.BlockManager;
 
@@ -42,11 +63,11 @@ $(function() {
         blockManager.add("h{{ ($loop->index + 1) }}-block", {
             label: '{{ $snippet->name }}',
             category: '{{ $snippet->proposal_category ? $snippet->proposal_category->name : trans('texts.custom') }}',
-            content: '{!! $snippet->html !!}',
-            style: '{!! $snippet->css !!}',
+            content: {!! json_encode($snippet->html) !!},
+            style: {!! json_encode($snippet->css) !!},
             attributes: {
-                title: '{!! $snippet->private_notes !!}',
-                class:'fa fa-{!! $snippet->icon ?: 'font' !!}'
+                title: {!! json_encode($snippet->private_notes) !!},
+                class:'fa fa-{{ $snippet->icon ?: 'font' }}'
             }
         });
     @endforeach

@@ -5,10 +5,10 @@
 
     <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
     <script type="text/javascript">
-        Stripe.setPublishableKey('{{ $accountGateway->getPublishableStripeKey() }}');
+        Stripe.setPublishableKey('{{ $accountGateway->getPublishableKey() }}');
         $(function() {
             var countries = {!! Cache::get('countries')->pluck('iso_3166_2','id') !!};
-            $('.payment-form').submit(function(event) {
+            $('.payment-form').unbind('submit').submit(function(event) {
                 if ($('[name=plaidAccountId]').length) {
                     return false;
                 }
@@ -47,10 +47,9 @@
                     return false;
                 }
 
-                if (NINJA.formIsSubmitted) {
+                if ($form.find('button').is(':disabled')) {
                     return false;
                 }
-                NINJA.formIsSubmitted = true;
 
                 // Disable the submit button to prevent repeated clicks
                 $form.find('button').prop('disabled', true);
@@ -98,7 +97,6 @@
                     error = "{{trans('texts.country_not_supported')}}";
                 }
                 $form.find('button').prop('disabled', false);
-                NINJA.formIsSubmitted = false;
                 $('#js-error-message').html(error).fadeIn();
             } else {
                 // response contains id and card, which contains additional card details
@@ -249,7 +247,7 @@
                         ->large() !!}
 
         @if ($accountGateway->getPlaidEnabled() && !empty($amount))
-            {!! Button::success(request()->update ? strtoupper(trans('texts.submit')) : strtoupper(trans('texts.pay_now') . ' - ' . $account->formatMoney($amount, $client, CURRENCY_DECORATOR_CODE)  ))
+            {!! Button::success(request()->capture ? strtoupper(trans('texts.submit')) : strtoupper(trans('texts.pay_now') . ' - ' . $account->formatMoney($amount, $client, CURRENCY_DECORATOR_CODE)  ))
                         ->submit()
                         ->withAttributes(['style'=>'display:none', 'id'=>'pay_now_button'])
                         ->large() !!}

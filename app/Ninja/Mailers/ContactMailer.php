@@ -191,7 +191,7 @@ class ContactMailer extends Mailer
         $data = [
             'body' => $this->templateService->processVariables($body, $variables),
             'link' => $invitation->getLink(),
-            'entityType' => $invoice->getEntityType(),
+            'entityType' => $proposal ? ENTITY_PROPOSAL : $invoice->getEntityType(),
             'invoiceId' => $invoice->id,
             'invitation' => $invitation,
             'account' => $account,
@@ -201,6 +201,8 @@ class ContactMailer extends Mailer
             'notes' => $reminder,
             'bccEmail' => $isFirst ? $account->getBccEmail() : false,
             'fromEmail' => $account->getFromEmail(),
+            'proposal' => $proposal,
+            'tag' => $account->account_key,
         ];
 
         if (! $proposal) {
@@ -305,6 +307,7 @@ class ContactMailer extends Mailer
             'bccEmail' => $account->getBccEmail(),
             'fromEmail' => $account->getFromEmail(),
             'isRefund' => $refunded > 0,
+            'tag' => $account->account_key,
         ];
 
         if (! $refunded && $account->attachPDF()) {

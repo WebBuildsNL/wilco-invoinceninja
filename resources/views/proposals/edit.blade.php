@@ -14,6 +14,7 @@
             ->method($method)
             ->onsubmit('return onFormSubmit(event)')
             ->id('mainForm')
+            ->autocomplete('off')
             ->addClass('warn-on-exit')
             ->rules([
                 'invoice_id' => 'required',
@@ -201,11 +202,9 @@
             submitForm_proposal('archive', {{ $proposal->id }});
     	}
 
-    	function onDeleteClick() {
-            sweetConfirm(function() {
-                submitForm_proposal('delete', {{ $proposal->id }});
-            });
-    	}
+        function onDeleteClick() {
+            submitForm_proposal('delete', {{ $proposal->id }});
+        }
     @endif
 
     $(function() {

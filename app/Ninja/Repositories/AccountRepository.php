@@ -67,6 +67,8 @@ class AccountRepository
         $account->currency_id = DEFAULT_CURRENCY;
 
         // Set default language/currency based on IP
+        // TODO Disabled until GDPR implications are understood
+        /*
         if (\Cache::get('currencies')) {
             if ($data = unserialize(@file_get_contents('http://www.geoplugin.net/php.gp?ip=' . $account->ip))) {
                 $currencyCode = strtolower($data['geoplugin_currencyCode']);
@@ -94,6 +96,7 @@ class AccountRepository
                 }
             }
         }
+        */
 
         $account->save();
 
@@ -129,15 +132,17 @@ class AccountRepository
     private function checkForSpammer()
     {
         $ip = Request::getClientIp();
-        $count = Account::whereIp($ip)->count();
+        $count = Account::whereIp($ip)->whereHas('users', function ($query) {
+            $query->whereRegistered(true);
+        })->count();
 
-        if ($count > 1 && $errorEmail = env('ERROR_EMAIL')) {
+        if ($count > 10 && $errorEmail = env('ERROR_EMAIL')) {
             \Mail::raw($ip, function ($message) use ($ip, $errorEmail) {
                 $message->to($errorEmail)
                         ->from(CONTACT_EMAIL)
                         ->subject('Duplicate company for IP: ' . $ip);
             });
-            if ($count >= 5) {
+            if ($count >= 15) {
                 abort();
             }
         }
@@ -191,7 +196,7 @@ class AccountRepository
         foreach ($clients as $client) {
             if ($client->name) {
                 $data['clients'][] = [
-                    'value' => ($account->clientNumbersEnabled() && $client->id_number ? $client->id_number . ': ' : '') . $client->name,
+                    'value' => ($client->id_number ? $client->id_number . ': ' : '') . $client->name,
                     'tokens' => implode(',', [$client->name, $client->id_number, $client->vat_number, $client->work_phone]),
                     'url' => $client->present()->url,
                 ];

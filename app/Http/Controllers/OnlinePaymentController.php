@@ -75,14 +75,14 @@ class OnlinePaymentController extends BaseController
             ]);
         }
 
-        if (! $invitation->invoice->canBePaid() && ! request()->update) {
+        if (! request()->capture && ! $invitation->invoice->canBePaid()) {
             return redirect()->to('view/' . $invitation->invitation_key);
         }
 
         $invitation = $invitation->load('invoice.client.account.account_gateways.gateway');
         $account = $invitation->account;
 
-        if ($account->requiresAuthorization($invitation->invoice) && ! session('authorized:' . $invitation->invitation_key) && ! request()->update) {
+        if (! request()->capture && $account->requiresAuthorization($invitation->invoice) && ! session('authorized:' . $invitation->invitation_key)) {
             return redirect()->to('view/' . $invitation->invitation_key);
         }
 
@@ -126,14 +126,14 @@ class OnlinePaymentController extends BaseController
 
         $paymentDriver = $invitation->account->paymentDriver($invitation, $gatewayTypeId);
 
-        if (! $invitation->invoice->canBePaid() && ! request()->update) {
+        if (! $invitation->invoice->canBePaid() && ! request()->capture) {
             return redirect()->to('view/' . $invitation->invitation_key);
         }
 
         try {
             $paymentDriver->completeOnsitePurchase($request->all());
 
-            if (request()->update) {
+            if (request()->capture) {
                 return redirect('/client/dashboard')->withMessage(trans('texts.updated_payment_details'));
             } elseif ($paymentDriver->isTwoStep()) {
                 Session::flash('warning', trans('texts.bank_account_verification_next_steps'));
@@ -390,7 +390,7 @@ class OnlinePaymentController extends BaseController
                 'product_key' => $product->product_key,
                 'notes' => $product->notes,
                 'cost' => $product->cost,
-                'qty' => 1,
+                'qty' => request()->quantity ?: (request()->qty ?: 1),
                 'tax_rate1' => $product->tax_rate1,
                 'tax_name1' => $product->tax_name1 ?: '',
                 'tax_rate2' => $product->tax_rate2,
