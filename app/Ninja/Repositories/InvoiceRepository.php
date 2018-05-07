@@ -377,7 +377,7 @@ class InvoiceRepository extends BaseRepository
         if (Utils::isNinjaProd() && ! Utils::isReseller()) {
             $copy = json_decode( json_encode($data), true);
             $copy['data'] = false;
-            $logMessage = date('r') . ' account_id: ' . $account->id . ' ' . json_encode($copy);
+            $logMessage = date('r') . ' account_id: ' . $account->id . ' ' . json_encode($copy) . "\n\n";
             @file_put_contents(storage_path('logs/invoice-repo.log'), $logMessage, FILE_APPEND);
         }
 
@@ -1290,8 +1290,8 @@ class InvoiceRepository extends BaseRepository
         $data = $invoice->toArray();
         $fee = $amount;
 
-        if ($invoice->amount > 0) {
-            $fee += round($invoice->amount * $percent / 100, 2);
+        if ($invoice->getRequestedAmount() > 0) {
+            $fee += round($invoice->getRequestedAmount() * $percent / 100, 2);
         }
 
         $item = [];
