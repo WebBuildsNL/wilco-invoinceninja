@@ -79,7 +79,14 @@ class Mailer
                             config(['mail.' . $field => $value]);
                         }
                     }
-                    (new \Illuminate\Mail\MailServiceProvider(app()))->register();
+
+                    $fromEmail = config('mail.from.address');
+                    $app = \App::getInstance();
+                    $app->singleton('swift.transport', function ($app) {
+                        return new \Illuminate\Mail\TransportManager($app);
+                    });
+                    $mailer = new \Swift_Mailer($app['swift.transport']->driver());
+                    Mail::setSwiftMailer($mailer);
                 }
             }
         }

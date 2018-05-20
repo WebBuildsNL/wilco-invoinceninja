@@ -53,7 +53,7 @@
                   @if ( ! $vendor->trashed())
                       @can('create', ENTITY_EXPENSE)
                           {!! Button::primary(trans("texts.new_expense"))
-                                  ->asLinkTo(URL::to("/expenses/create/{$vendor->public_id}"))
+                                  ->asLinkTo(URL::to("/expenses/create/0/{$vendor->public_id}"))
                                   ->appendIcon(Icon::create('plus-sign')) !!}
                       @endcan
                   @endif
@@ -190,6 +190,7 @@
                 'entityType' => ENTITY_EXPENSE,
                 'datatable' => new \App\Ninja\Datatables\ExpenseDatatable(true, true),
                 'vendorId' => $vendor->public_id,
+                'url' => url('api/vendor_expenses/' . $vendor->public_id),
             ])
         </div>
     </div>
@@ -201,9 +202,6 @@
 	$(function() {
 		$('.normalDropDown:not(.dropdown-toggle)').click(function(event) {
             openUrlOnClick('{{ URL::to('vendors/' . $vendor->public_id . '/edit') }}', event)
-		});
-		$('.primaryDropDown:not(.dropdown-toggle)').click(function(event) {
-			openUrlOnClick('{{ URL::to('expenses/create/' . $vendor->public_id ) }}', event);
 		});
 
         $('.nav-tabs a[href="#expenses"]').tab('show');
