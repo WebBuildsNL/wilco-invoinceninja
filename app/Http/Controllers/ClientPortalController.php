@@ -17,6 +17,7 @@ use App\Ninja\Repositories\InvoiceRepository;
 use App\Ninja\Repositories\PaymentRepository;
 use App\Ninja\Repositories\TaskRepository;
 use App\Services\PaymentService;
+use App\Jobs\Client\GenerateStatementData;
 use Auth;
 use Barracuda\ArchiveStream\ZipArchive;
 use Cache;
@@ -68,7 +69,7 @@ class ClientPortalController extends BaseController
 
         if (request()->silent) {
             session(['silent:' . $client->id => true]);
-            return redirect(request()->url());
+            return redirect(request()->url() . '?borderless=' . request()->borderless);
         }
 
         if (! $account->checkSubdomain(Request::server('HTTP_HOST'))) {
@@ -181,7 +182,7 @@ class ClientPortalController extends BaseController
             }
         }
 
-        return View::make('invoices.view', $data);
+        return View::make(request()->borderless ? 'invoices.view_borderless' : 'invoices.view', $data);
     }
 
     private function getPaymentTypes($account, $client, $invitation)
@@ -1008,5 +1009,42 @@ class ClientPortalController extends BaseController
 
         return redirect($account->enable_client_portal_dashboard ? '/client/dashboard' : '/client/payment_methods')
             ->withMessage(trans('texts.updated_client_details'));
+    }
+
+    public function statement() {
+        if (! $contact = $this->getContact()) {
+            return $this->returnError();
+        }
+
+        $client = $contact->client;
+        $account = $contact->account;
+
+        if (! $account->enable_client_portal || ! $account->enable_client_portal_dashboard) {
+            return $this->returnError();
+        }
+
+        $statusId = request()->status_id;
+        $startDate = request()->start_date;
+        $endDate = request()->end_date;
+
+        if (! $startDate) {
+            $startDate = Utils::today(false)->modify('-6 month')->format('Y-m-d');
+            $endDate = Utils::today(false)->format('Y-m-d');
+        }
+
+        if (request()->json) {
+            return dispatch(new GenerateStatementData($client, request()->all(), $contact));
+        }
+
+        $data = [
+            'extends' => 'public.header',
+            'client' => $client,
+            'account' => $account,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+        ];
+
+        return view('clients.statement', $data);
+
     }
 }

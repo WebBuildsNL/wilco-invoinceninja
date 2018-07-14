@@ -1500,6 +1500,11 @@ class Account extends Eloquent
         return $this->getGatewayConfig($gatewayId);
     }
 
+    public function getLocale()
+    {
+        return $this->language_id && $this->language ? $this->language->locale : DEFAULT_LOCALE;
+    }
+
     /**
      * @return bool
      */
@@ -1795,6 +1800,11 @@ class Account extends Eloquent
     public function hasMultipleAccounts()
     {
         return $this->company->accounts->count() > 1;
+    }
+
+    public function hasMultipleUsers()
+    {
+        return $this->users->count() > 1;
     }
 
     public function getPrimaryAccount()

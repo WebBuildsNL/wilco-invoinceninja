@@ -13,13 +13,15 @@ return [
 
     // Marketing links
     'time_tracker_web_url' => env('TIME_TRACKER_WEB_URL', 'https://www.invoiceninja.com/time-tracker'),
+    'knowledge_base_url' => env('KNOWLEDGE_BASE_URL', 'https://www.invoiceninja.com/knowledge-base/'),
 
     // Hosted plan coupons
     'coupon_50_off' => env('COUPON_50_OFF', false),
     'coupon_75_off' => env('COUPON_75_OFF', false),
     'coupon_free_year' => env('COUPON_FREE_YEAR', false),
 
-    // data services
+    // Currency exchange rates
+    'exchange_rates_enabled' => env('EXCHANGE_RATES_ENABLED', false),
     'exchange_rates_url' => env('EXCHANGE_RATES_URL', 'https://api.fixer.io/latest'),
     'exchange_rates_base' => env('EXCHANGE_RATES_BASE', 'EUR'),
 
@@ -28,6 +30,7 @@ return [
         'hosted' => env('TERMS_OF_SERVICE_URL', 'https://www.invoiceninja.com/terms/'),
         'selfhost' => env('TERMS_OF_SERVICE_URL', 'https://www.invoiceninja.com/self-hosting-terms-service/'),
     ],
+
     'privacy_policy_url' => [
         'hosted' => env('PRIVACY_POLICY_URL', 'https://www.invoiceninja.com/privacy-policy/'),
         'selfhost' => env('PRIVACY_POLICY_URL', 'https://www.invoiceninja.com/self-hosting-privacy-data-control/'),
