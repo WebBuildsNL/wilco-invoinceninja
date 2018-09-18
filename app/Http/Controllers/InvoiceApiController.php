@@ -349,7 +349,7 @@ class InvoiceApiController extends BaseAPIController
 
         // Workaround to support line item taxes w/Zapier
         foreach (['tax_rate1', 'tax_name1', 'tax_rate2', 'tax_name2'] as $field) {
-            if (! empty($item['item_' . $field])) {
+            if (isset($item['item_' . $field])) {
                 $item[$field] = $item['item_' . $field];
             }
         }
@@ -428,6 +428,7 @@ class InvoiceApiController extends BaseAPIController
         $this->invoiceService->save($data, $request->entity());
 
         $invoice = Invoice::scope($publicId)
+                        ->withTrashed()
                         ->with('client', 'invoice_items', 'invitations')
                         ->firstOrFail();
 
