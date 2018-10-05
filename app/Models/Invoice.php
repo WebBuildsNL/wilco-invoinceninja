@@ -817,7 +817,11 @@ class Invoice extends EntityModel implements BalanceAffecting
      */
     public static function calcLink($invoice)
     {
-        return link_to('invoices/' . $invoice->public_id, $invoice->invoice_number);
+        if(isset($invoice->invoice_type_id))
+            $linkPrefix = ($invoice->invoice_type_id == INVOICE_TYPE_QUOTE) ? 'quotes/' : 'invoices/';
+        else
+            $linkPrefix = 'invoices/';
+        return link_to($linkPrefix . $invoice->public_id, $invoice->invoice_number);
     }
 
     /**
@@ -1608,7 +1612,7 @@ class Invoice extends EntityModel implements BalanceAffecting
             return false;
         }
 
-        $invoice = static::scope($this->quote_invoice_id)->with('invitations')->first();
+        $invoice = static::scope($this->quote_invoice_id, $this->account_id)->with('invitations')->first();
 
         if (! $invoice) {
             return false;
