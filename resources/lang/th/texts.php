@@ -819,7 +819,7 @@ $LANG = array(
     'archived_token' => 'เก็บบันทึก Token แล้ว',
     'archive_user' => 'เก็บบันทึกผู้ใช้',
     'archived_user' => 'เก็บบันทึกผู้ใช้แล้ว',
-    'archive_account_gateway' => 'เก็บบันทึกช่องทางชำระเงิน',
+    'archive_account_gateway' => 'Delete Gateway',
     'archived_account_gateway' => 'เก็บบันทึกช่องทางชำระเงินแล้ว',
     'archive_recurring_invoice' => 'เก็บบันทึกใบแจ้งหนี้ประจำแล้ว',
     'archived_recurring_invoice' => 'เก็บบันทึกใบแจ้งหนี้ประจำแล้ว',
@@ -2449,6 +2449,14 @@ $LANG = array(
     'currency_haitian_gourde' => 'Haitian Gourde',
     'currency_zambian_kwacha' => 'Zambian Kwacha',
     'currency_nepalese_rupee' => 'Nepalese Rupee',
+    'currency_cfp_franc' => 'CFP Franc',
+    'currency_mauritian_rupee' => 'Mauritian Rupee',
+    'currency_cape_verdean_escudo' => 'Cape Verdean Escudo',
+    'currency_kuwaiti_dinar' => 'Kuwaiti Dinar',
+    'currency_algerian_dinar' => 'Algerian Dinar',
+    'currency_macedonian_denar' => 'Macedonian Denar',
+    'currency_fijian_dollar' => 'Fijian Dollar',
+    'currency_bolivian_boliviano' => 'Bolivian Boliviano',
 
     'review_app_help' => 'We hope you\'re enjoying using the app.<br/>If you\'d consider :link we\'d greatly appreciate it!',
     'writing_a_review' => 'writing a review',
@@ -2882,6 +2890,7 @@ $LANG = array(
     'guide' => 'Guide',
     'gateway_fee_item' => 'Gateway Fee Item',
     'gateway_fee_description' => 'Gateway Fee Surcharge',
+    'gateway_fee_discount_description' => 'Gateway Fee Discount',
     'show_payments' => 'Show Payments',
     'show_aging' => 'Show Aging',
     'reference' => 'Reference',
@@ -3126,6 +3135,10 @@ $LANG = array(
     'authenticate' => 'Authenticate',
     'please_authenticate' => 'Please authenticate',
     'biometric_authentication' => 'Biometric Authentication',
+    'auto_start_tasks' => 'Auto Start Tasks',
+    'budgeted' => 'Budgeted',
+    'please_enter_a_name' => 'Please enter a name',
+    'click_plus_to_add_time' => 'Click + to add time',
 
 );
 
