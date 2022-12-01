@@ -134,9 +134,7 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "rm bootstrap/cache/compiled.php || true",
-            "php74 artisan view:clear",
-            "php74 artisan clear-compiled"
+            "rm bootstrap/cache/compiled.php || true"
         ],
         "post-update-cmd": [
             "rm bootstrap/cache/compiled.php || true",
