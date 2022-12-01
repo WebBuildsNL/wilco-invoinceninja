@@ -343,7 +343,7 @@ class AppController extends BaseController
     {
         $result = DB::select("SELECT engine
                     FROM information_schema.TABLES
-                    WHERE TABLE_NAME='clients' AND TABLE_SCHEMA='ninja'");
+                    WHERE TABLE_NAME='clients' AND TABLE_SCHEMA='boekhoudingd'");
 
         if(property_exists($result[0], 'engine'))
             $engine = $result[0]->engine;
